@@ -1,0 +1,72 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.conda/
+
+# Environment variables and local secrets
+.env
+.env.*
+!.env.example
+*.local
+AGENTS.md
+
+# Build and packaging artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Test, lint, and type-check caches
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.tox/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Hugging Face / dataset caches
+.cache/
+hf_cache/
+huggingface/
+dataset_cache/
+downloads/
+
+# Training outputs and model artifacts
+checkpoints/
+checkpoint*/
+models/
+saved_models/
+outputs/
+runs/
+logs/
+wandb/
+tensorboard/
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.safetensors
+*.onnx
+
+# IDE and local tool state
+.vscode/
+.idea/
+.codex/
+.agents/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
