@@ -14,7 +14,9 @@ from model import BertClassifierModel
 def parse_args():
     parser = argparse.ArgumentParser(description="Train BERT classifier on CLUE TNEWS.")
     parser.add_argument("--checkpoint_dir", type=str, default="checkpoints")
-    parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
+    parser.add_argument(
+        "--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu"
+    )
     parser.add_argument("--max_train_batches", type=int, default=None)
     parser.add_argument("--max_valid_batches", type=int, default=None)
     return parser.parse_args()
@@ -38,13 +40,6 @@ def build_loaders():
     return train_loader, val_loader
 
 
-def set_model_train_mode(model):
-    model.train()
-    if hasattr(model, "bert_model"):
-        # BertClassifierModel freezes BERT with torch.no_grad(), so keep encoder dropout off.
-        model.bert_model.eval()
-
-
 def move_batch_to_device(batch, device):
     return {
         "input_ids": batch["input_ids"].to(device),
@@ -58,8 +53,10 @@ def accuracy_from_logits(logits, labels):
     return (preds == labels).sum().item()
 
 
-def train_one_epoch(model, loader, criterion, optimizer, device, epoch, max_batches=None):
-    set_model_train_mode(model)
+def train_one_epoch(
+    model, loader, criterion, optimizer, device, epoch, max_batches=None
+):
+    model.train()
     total_loss = 0.0
     total_correct = 0
     total_examples = 0
@@ -130,7 +127,9 @@ def evaluate(model, loader, criterion, device, max_batches=None):
     }
 
 
-def save_checkpoint(path, model, optimizer, epoch, best_val_acc, train_metrics, val_metrics, args):
+def save_checkpoint(
+    path, model, optimizer, epoch, best_val_acc, train_metrics, val_metrics, args
+):
     path.parent.mkdir(parents=True, exist_ok=True)
     torch.save(
         {
@@ -154,7 +153,7 @@ def main():
     train_loader, val_loader = build_loaders()
     model = BertClassifierModel(num_labels=config.classname_len).to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=config.learning_rate)
+    optimizer = optim.AdamW(model.parameters(), lr=config.learning_rate)
 
     checkpoint_dir = Path(args.checkpoint_dir)
     best_val_acc = 0.0

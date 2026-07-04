@@ -52,7 +52,7 @@ def bulid_dataloader(
     split="train", batch_size=2, shuffle=True, num_workers=0, drop_last=False
 ):
     dataset = load_dataset(config.dataset_path, config.dataset_name, split=split)
-    print(dataset)
+    # print(dataset)
     dataloader = DataLoader(
         dataset,
         batch_size=batch_size,

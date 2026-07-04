@@ -8,8 +8,8 @@ class Config:
         # 训练配置
         self.batch_size = 64
         self.num_workers = 4
-        self.learning_rate = 0.001
-        self.num_epochs = 10
+        self.learning_rate = 2e-5
+        self.num_epochs = 100
         self.dropout = 0.1
         self.max_length = 128
 

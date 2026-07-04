@@ -21,10 +21,11 @@ class BertClassifierModel(nn.Module):
 
     def forward(self, input_ids, attention_mask):
         # torch.no_grad()冻结bert的反向传播。如果放开，训练耗时大量增加
-        with torch.no_grad():
-            bert_output = self.bert_model(
-                input_ids=input_ids, attention_mask=attention_mask
-            )
+        # self.bert_model.eval()
+        # with torch.no_grad():
+        bert_output = self.bert_model(
+            input_ids=input_ids, attention_mask=attention_mask
+        )
 
         # 调用我们自己的网络层
         """
