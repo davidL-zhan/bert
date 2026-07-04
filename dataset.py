@@ -6,12 +6,6 @@ import torch
 import csv
 from pathlib import Path
 
-# dataset = load_dataset(config.dataset_path, config.dataset_name)
-# print(dataset)
-# print(dataset["train"][0])
-# print(dataset["train"].features)
-# print(dataset["train"].column_names)
-
 tokenizer = BertTokenizer.from_pretrained(config.model_name)
 
 # 保存词表
