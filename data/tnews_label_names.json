@@ -2,76 +2,76 @@
   {
     "label_id": 0,
     "label_code": "100",
-    "label_name": "民生/故事"
+    "label_name_zh": "民生/故事"
   },
   {
     "label_id": 1,
     "label_code": "101",
-    "label_name": "文化"
+    "label_name_zh": "文化"
   },
   {
     "label_id": 2,
     "label_code": "102",
-    "label_name": "娱乐"
+    "label_name_zh": "娱乐"
   },
   {
     "label_id": 3,
     "label_code": "103",
-    "label_name": "体育"
+    "label_name_zh": "体育"
   },
   {
     "label_id": 4,
     "label_code": "104",
-    "label_name": "财经"
+    "label_name_zh": "财经"
   },
   {
     "label_id": 5,
     "label_code": "106",
-    "label_name": "房产"
+    "label_name_zh": "房产"
   },
   {
     "label_id": 6,
     "label_code": "107",
-    "label_name": "汽车"
+    "label_name_zh": "汽车"
   },
   {
     "label_id": 7,
     "label_code": "108",
-    "label_name": "教育"
+    "label_name_zh": "教育"
   },
   {
     "label_id": 8,
     "label_code": "109",
-    "label_name": "科技"
+    "label_name_zh": "科技"
   },
   {
     "label_id": 9,
     "label_code": "110",
-    "label_name": "军事"
+    "label_name_zh": "军事"
   },
   {
     "label_id": 10,
     "label_code": "112",
-    "label_name": "旅游"
+    "label_name_zh": "旅游"
   },
   {
     "label_id": 11,
     "label_code": "113",
-    "label_name": "国际"
+    "label_name_zh": "国际"
   },
   {
     "label_id": 12,
     "label_code": "114",
-    "label_name": "证券/股票"
+    "label_name_zh": "证券/股票"
   },
   {
     "label_id": 13,
     "label_code": "115",
-    "label_name": "农业/三农"
+    "label_name_zh": "农业/三农"
   },
   {
     "label_id": 14,
     "label_code": "116",
-    "label_name": "电竞/游戏"
+    "label_name_zh": "电竞/游戏"
   }
 ]
