@@ -12,6 +12,8 @@ class Config:
         self.num_epochs = 100
         self.dropout = 0.1
         self.max_length = 128
+        self.warmup_ratio = 0.1
+        self.max_grad_norm = 1.0
 
 
 config = Config()

@@ -17,6 +17,7 @@ class BertClassifierModel(nn.Module):
 
         # 2.2- 再定义我们自己的网络结构
         in_features = BertConfig.from_pretrained(config.model_name).hidden_size
+        self.dropout = nn.Dropout(config.dropout)
         self.linear = nn.Linear(in_features=in_features, out_features=num_labels)
 
     def forward(self, input_ids, attention_mask):
@@ -36,7 +37,8 @@ class BertClassifierModel(nn.Module):
         """
         # 下面两行代码的效果类似
         # return self.linear(bert_output.pooler_output)
-        return self.linear(bert_output.last_hidden_state[:, 0])
+        cls_hidden_state = bert_output.last_hidden_state[:, 0]
+        return self.linear(self.dropout(cls_hidden_state))
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ from pathlib import Path
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from transformers import get_linear_schedule_with_warmup
 from tqdm import tqdm
 
 from config import config
@@ -53,8 +54,15 @@ def accuracy_from_logits(logits, labels):
     return (preds == labels).sum().item()
 
 
+def get_total_training_steps(loader, max_batches=None):
+    steps_per_epoch = len(loader)
+    if max_batches is not None:
+        steps_per_epoch = min(steps_per_epoch, max_batches)
+    return steps_per_epoch * config.num_epochs
+
+
 def train_one_epoch(
-    model, loader, criterion, optimizer, device, epoch, max_batches=None
+    model, loader, criterion, optimizer, scheduler, device, epoch, max_batches=None
 ):
     model.train()
     total_loss = 0.0
@@ -72,7 +80,10 @@ def train_one_epoch(
         )
         loss = criterion(logits, batch["labels"])
         loss.backward()
+        if config.max_grad_norm is not None and config.max_grad_norm > 0:
+            torch.nn.utils.clip_grad_norm_(model.parameters(), config.max_grad_norm)
         optimizer.step()
+        scheduler.step()
 
         batch_size = batch["labels"].size(0)
         total_loss += loss.item() * batch_size
@@ -81,7 +92,11 @@ def train_one_epoch(
 
         avg_loss = total_loss / total_examples
         avg_acc = total_correct / total_examples
-        progress.set_postfix(loss=f"{avg_loss:.4f}", acc=f"{avg_acc:.4f}")
+        progress.set_postfix(
+            loss=f"{avg_loss:.4f}",
+            acc=f"{avg_acc:.4f}",
+            lr=f"{scheduler.get_last_lr()[0]:.2e}",
+        )
 
         if max_batches is not None and step >= max_batches:
             break
@@ -128,7 +143,15 @@ def evaluate(model, loader, criterion, device, max_batches=None):
 
 
 def save_checkpoint(
-    path, model, optimizer, epoch, best_val_acc, train_metrics, val_metrics, args
+    path,
+    model,
+    optimizer,
+    scheduler,
+    epoch,
+    best_val_acc,
+    train_metrics,
+    val_metrics,
+    args,
 ):
     path.parent.mkdir(parents=True, exist_ok=True)
     torch.save(
@@ -136,6 +159,7 @@ def save_checkpoint(
             "epoch": epoch,
             "model_state_dict": model.state_dict(),
             "optimizer_state_dict": optimizer.state_dict(),
+            "scheduler_state_dict": scheduler.state_dict(),
             "best_val_acc": best_val_acc,
             "train_metrics": train_metrics,
             "val_metrics": val_metrics,
@@ -154,6 +178,13 @@ def main():
     model = BertClassifierModel(num_labels=config.classname_len).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=config.learning_rate)
+    total_training_steps = get_total_training_steps(train_loader, args.max_train_batches)
+    warmup_steps = int(total_training_steps * config.warmup_ratio)
+    scheduler = get_linear_schedule_with_warmup(
+        optimizer=optimizer,
+        num_warmup_steps=warmup_steps,
+        num_training_steps=total_training_steps,
+    )
 
     checkpoint_dir = Path(args.checkpoint_dir)
     best_val_acc = 0.0
@@ -163,7 +194,11 @@ def main():
     print(
         f"epochs: {config.num_epochs}, "
         f"batch_size: {config.batch_size}, "
-        f"lr: {config.learning_rate}"
+        f"lr: {config.learning_rate}, "
+        f"dropout: {config.dropout}, "
+        f"warmup_steps: {warmup_steps}, "
+        f"total_steps: {total_training_steps}, "
+        f"max_grad_norm: {config.max_grad_norm}"
     )
 
     for epoch in range(1, config.num_epochs + 1):
@@ -172,6 +207,7 @@ def main():
             loader=train_loader,
             criterion=criterion,
             optimizer=optimizer,
+            scheduler=scheduler,
             device=device,
             epoch=epoch,
             max_batches=args.max_train_batches,
@@ -192,6 +228,7 @@ def main():
             path=checkpoint_dir / "last.pt",
             model=model,
             optimizer=optimizer,
+            scheduler=scheduler,
             epoch=epoch,
             best_val_acc=best_val_acc,
             train_metrics=train_metrics,
@@ -203,6 +240,7 @@ def main():
                 path=checkpoint_dir / "best.pt",
                 model=model,
                 optimizer=optimizer,
+                scheduler=scheduler,
                 epoch=epoch,
                 best_val_acc=best_val_acc,
                 train_metrics=train_metrics,
