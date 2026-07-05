@@ -1,3 +1,6 @@
+import os
+
+
 class Config:
     def __init__(self):
         self.dataset_path = "STARRY3056/ChnSentiCorp"
@@ -19,6 +22,9 @@ class Config:
         self.max_grad_norm = 1.0
 
 
+Root_DIR = os.path.dirname(os.path.abspath(__file__))
+
 config = Config()
 if __name__ == "__main__":
+    print(Root_DIR)
     print(config.model_name)

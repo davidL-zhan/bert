@@ -7,7 +7,7 @@ import torch.optim as optim
 from transformers import get_linear_schedule_with_warmup
 from tqdm import tqdm
 
-from config import config
+from config import Root_DIR, config
 from dataset import bulid_dataloader
 from model import BertClassifierModel
 
@@ -21,6 +21,13 @@ def parse_args():
     parser.add_argument("--max_train_batches", type=int, default=None)
     parser.add_argument("--max_valid_batches", type=int, default=None)
     return parser.parse_args()
+
+
+def resolve_project_path(path):
+    path = Path(path)
+    if path.is_absolute():
+        return path
+    return Path(Root_DIR) / path
 
 
 def build_loaders():
@@ -171,7 +178,7 @@ def main():
         num_training_steps=total_training_steps,
     )
 
-    checkpoint_dir = Path(args.checkpoint_dir)
+    checkpoint_dir = resolve_project_path(args.checkpoint_dir)
     best_val_acc = 0.0
 
     print(f"device: {device}")

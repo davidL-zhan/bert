@@ -1,7 +1,7 @@
 from datasets import load_dataset
 from torch.utils.data import DataLoader
 from transformers import BertTokenizer
-from config import config
+from config import Root_DIR, config
 import torch
 import csv
 from pathlib import Path
@@ -10,7 +10,7 @@ tokenizer = BertTokenizer.from_pretrained(config.model_name)
 
 # 保存词表
 # vocab = tokenizer.get_vocab()
-# save_path = "data/vocab.csv"
+# save_path = Path(Root_DIR) / "data" / "vocab.csv"
 
 # with open(save_path, "w", encoding="utf-8-sig", newline="") as f:
 #     writer = csv.writer(f)
