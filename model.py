@@ -22,11 +22,11 @@ class BertClassifierModel(nn.Module):
 
     def forward(self, input_ids, attention_mask):
         # torch.no_grad()冻结bert的反向传播。如果放开，训练耗时大量增加
-        # self.bert_model.eval()
-        # with torch.no_grad():
-        bert_output = self.bert_model(
-            input_ids=input_ids, attention_mask=attention_mask
-        )
+        self.bert_model.eval()
+        with torch.no_grad():
+            bert_output = self.bert_model(
+                input_ids=input_ids, attention_mask=attention_mask
+            )
 
         # 调用我们自己的网络层
         """
@@ -42,6 +42,8 @@ class BertClassifierModel(nn.Module):
 
 
 if __name__ == "__main__":
+    from torchinfo import summary
+
     torch.manual_seed(42)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -60,6 +62,13 @@ if __name__ == "__main__":
     input_ids = encoded["input_ids"].to(device)
     attention_mask = encoded["attention_mask"].to(device)
     labels = torch.tensor([0, 1], dtype=torch.long, device=device)
+
+    summary(
+        model,
+        input_data=(input_ids, attention_mask),
+        col_names=("input_size", "output_size", "num_params", "trainable"),
+        depth=4,
+    )
 
     with torch.inference_mode():
         logits = model(input_ids=input_ids, attention_mask=attention_mask)

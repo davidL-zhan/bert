@@ -2,7 +2,9 @@ class Config:
     def __init__(self):
         self.dataset_path = "clue/clue"
         self.dataset_name = "tnews"
-        self.model_name = "google-bert/bert-base-chinese"
+        self.model_name = "hfl/chinese-macbert-base"
+        # google-bert/bert-base-chinese
+        # hfl/chinese-macbert-base
         self.classname_len = 15
 
         # 训练配置
