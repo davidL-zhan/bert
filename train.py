@@ -75,6 +75,7 @@ def train_one_epoch(
     total_loss = 0.0
     total_correct = 0
     total_examples = 0
+    model.train()
 
     progress = tqdm(loader, desc=f"train epoch {epoch}", leave=False)
     for step, batch in enumerate(progress, start=1):

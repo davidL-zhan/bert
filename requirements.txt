@@ -7,3 +7,9 @@ sentencepiece
 tqdm
 torchinfo
 transformers
+fastapi
+starlette
+uvicorn
+openai
+streamlit
+requests

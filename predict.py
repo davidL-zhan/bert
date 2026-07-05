@@ -24,6 +24,7 @@ def predict(text: dict):
         padding="max_length",
         truncation=True,
         max_length=config.max_length,
+        return_tensors="pt",
     )
     input_ids = torch.tensor(text["input_ids"]).unsqueeze(0).to(device)
     attention_mask = torch.tensor(text["attention_mask"]).unsqueeze(0).to(device)
@@ -33,4 +34,4 @@ def predict(text: dict):
 
 
 if __name__ == "__main__":
-    print(predict({"text": "我非常喜欢这个电影"}))
+    print(predict({"text": "这个宾馆比较陈旧了，特价的房间也很一般。总体来说一般"}))
