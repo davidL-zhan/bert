@@ -21,6 +21,11 @@ class Config:
         self.warmup_ratio = 0.1
         self.max_grad_norm = 1.0
 
+        # llm
+        self.llm_api_key = os.getenv("DASHSCOPE_API_KEY")
+        self.llm_model_name = "deepseek-v4-flash"
+        self.llm_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+
 
 Root_DIR = os.path.dirname(os.path.abspath(__file__))
 
