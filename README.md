@@ -120,6 +120,46 @@ class BertClassifierModel(nn.Module):
 model_name = "hfl/chinese-macbert-base"
 ```
 
+### MacBERT 模型说明
+
+本项目使用的 `hfl/chinese-macbert-base` 是哈工大讯飞联合实验室 HFL 发布的中文 MacBERT-base 预训练模型。MacBERT 的全称可以理解为 **MLM as correction BERT**，它仍然属于 BERT 系列的 Encoder-only 预训练语言模型，不是生成式大模型，也不是开箱即用的情感分类器。
+
+MacBERT 的主体网络结构和原始 BERT 基本一致，因此在本项目中可以直接通过 `transformers.BertTokenizer` 和 `transformers.BertModel` 加载：
+
+```python
+tokenizer = BertTokenizer.from_pretrained("hfl/chinese-macbert-base")
+bert_model = BertModel.from_pretrained("hfl/chinese-macbert-base")
+```
+
+`hfl/chinese-macbert-base` 的 base 版本规格大致是：
+
+| 项目 | 配置 |
+|---|---:|
+| Transformer 层数 | 12 |
+| hidden size | 768 |
+| attention heads | 12 |
+| 参数量 | 约 102M |
+| 适用语言 | 中文 |
+| 加载方式 | BERT 相关类，如 `BertTokenizer` / `BertModel` |
+
+它和普通 BERT 的核心区别主要在预训练阶段。传统 BERT 会把一部分 token 替换成 `[MASK]`，但 `[MASK]` 在下游微调和真实推理时通常不会出现，这会造成预训练和微调之间的不一致。MacBERT 用“纠错式”的预训练任务缓解这个问题：被选中的词不直接替换成 `[MASK]`，而是优先替换成语义相近的词，让模型学习把被扰动的句子纠正回原始语义。除此之外，MacBERT 还结合了 Whole Word Masking、N-gram masking 和 Sentence-Order Prediction 等策略。
+
+在本项目中，MacBERT 的职责是提供中文文本的上下文语义表示：
+
+1. `dataset.py` 用同一个模型名加载 tokenizer，把中文评价转成 `input_ids` 和 `attention_mask`。
+2. `model.py` 用 `BertModel.from_pretrained(config.model_name)` 加载 MacBERT 主干。
+3. 前向传播时取 `[CLS]` 位置的向量，即 `last_hidden_state[:, 0]`。
+4. 项目自己的 `Dropout + Linear` 分类头把 `[CLS]` 向量映射到两个类别：负面评价 / 正面评价。
+5. 训练时会更新 MacBERT 主干和分类头参数，因此这是基于 MacBERT 的中文情感分类微调。
+
+需要注意的是，`hfl/chinese-macbert-base` 本身只提供通用中文语义表示能力。它不会直接知道本项目的 `0/1` 标签含义，必须经过 `train.py` 在 ChnSentiCorp 情感分类数据上训练后，才能通过 `predict.py` 加载 `checkpoints/best.pt` 做稳定的本地分类推理。
+
+参考资料：
+
+- Hugging Face 模型卡：[hfl/chinese-macbert-base](https://huggingface.co/hfl/chinese-macbert-base)
+- MacBERT 项目：[ymcui/MacBERT](https://github.com/ymcui/MacBERT)
+- 论文：[Revisiting Pre-Trained Models for Chinese Natural Language Processing](https://aclanthology.org/2020.findings-emnlp.58/)
+
 模型逻辑是：
 
 1. 输入文本先经过 `BertTokenizer` 转为 `input_ids` 和 `attention_mask`。
@@ -453,4 +493,3 @@ $env:DASHSCOPE_API_KEY="你的百炼 API Key"
 # 6. 新开一个 PowerShell，启动前端
 & "E:\miniconda\envs\NLP\python.exe" -m streamlit run .\fronted.py
 ```
-
