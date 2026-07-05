@@ -26,8 +26,8 @@ def predict(text: dict):
         max_length=config.max_length,
         return_tensors="pt",
     )
-    input_ids = torch.tensor(text["input_ids"]).unsqueeze(0).to(device)
-    attention_mask = torch.tensor(text["attention_mask"]).unsqueeze(0).to(device)
+    input_ids = text["input_ids"].to(device)
+    attention_mask = text["attention_mask"].to(device)
     with torch.no_grad():
         logits = model(input_ids, attention_mask)
     return logits.argmax().item()
