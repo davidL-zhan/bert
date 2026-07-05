@@ -7,7 +7,8 @@ import torch
 
 
 class BertClassifierModel(nn.Module):
-    def __init__(self, num_labels=15):
+
+    def __init__(self, num_labels=config.classname_len):
         # 1- 初始化父类
         super().__init__()
 
@@ -48,7 +49,7 @@ if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     tokenizer = BertTokenizer.from_pretrained(config.model_name)
-    model = BertClassifierModel().to(device)
+    model = BertClassifierModel(config.classname_len).to(device)
     model.eval()
 
     sentences = ["这部电影很好看", "这个餐厅的服务太差了"]

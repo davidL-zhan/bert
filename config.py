@@ -1,12 +1,13 @@
 class Config:
     def __init__(self):
-        self.dataset_path = "clue/clue"
-        self.dataset_name = "tnews"
+        self.dataset_path = "STARRY3056/ChnSentiCorp"
+        self.dataset_name = None
         self.model_name = "hfl/chinese-macbert-base"
         # google-bert/bert-base-chinese
         # hfl/chinese-macbert-base
-        self.classname_len = 15
-
+        self.classname_len = 2
+        self.text_column = "text"
+        self.label_column = "label"
         # 训练配置
         self.batch_size = 64
         self.num_workers = 4

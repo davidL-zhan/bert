@@ -22,8 +22,10 @@ tokenizer = BertTokenizer.from_pretrained(config.model_name)
 
 def collate_fn(batch):
 
-    sentences = [item["sentence"] for item in batch]
-    labels = torch.tensor([item["label"] for item in batch], dtype=torch.long)
+    sentences = [item[config.text_column] for item in batch]
+    labels = torch.tensor(
+        [item[config.label_column] for item in batch], dtype=torch.long
+    )
     # idx = torch.tensor([item["idx"] for item in batch], dtype=torch.long)
 
     encoded = tokenizer(
@@ -46,6 +48,7 @@ def bulid_dataloader(
     split="train", batch_size=2, shuffle=True, num_workers=0, drop_last=False
 ):
     dataset = load_dataset(config.dataset_path, config.dataset_name, split=split)
+
     # print(dataset)
     dataloader = DataLoader(
         dataset,
