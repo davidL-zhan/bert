@@ -12,7 +12,7 @@ class Config:
         self.batch_size = 64
         self.num_workers = 4
         self.learning_rate = 2e-5
-        self.num_epochs = 5
+        self.num_epochs = 15
         self.dropout = 0.1
         self.max_length = 128
         self.warmup_ratio = 0.1
