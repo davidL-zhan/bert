@@ -145,27 +145,10 @@ def evaluate(model, loader, criterion, device, max_batches=None):
 def save_checkpoint(
     path,
     model,
-    optimizer,
-    scheduler,
-    epoch,
-    best_val_acc,
-    train_metrics,
-    val_metrics,
-    args,
 ):
     path.parent.mkdir(parents=True, exist_ok=True)
     torch.save(
-        {
-            "epoch": epoch,
-            "model_state_dict": model.state_dict(),
-            "optimizer_state_dict": optimizer.state_dict(),
-            "scheduler_state_dict": scheduler.state_dict(),
-            "best_val_acc": best_val_acc,
-            "train_metrics": train_metrics,
-            "val_metrics": val_metrics,
-            "config": vars(config),
-            "args": vars(args),
-        },
+        model.state_dict(),
         path,
     )
 
@@ -178,7 +161,9 @@ def main():
     model = BertClassifierModel(num_labels=config.classname_len).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=config.learning_rate)
-    total_training_steps = get_total_training_steps(train_loader, args.max_train_batches)
+    total_training_steps = get_total_training_steps(
+        train_loader, args.max_train_batches
+    )
     warmup_steps = int(total_training_steps * config.warmup_ratio)
     scheduler = get_linear_schedule_with_warmup(
         optimizer=optimizer,
@@ -227,25 +212,11 @@ def main():
         save_checkpoint(
             path=checkpoint_dir / "last.pt",
             model=model,
-            optimizer=optimizer,
-            scheduler=scheduler,
-            epoch=epoch,
-            best_val_acc=best_val_acc,
-            train_metrics=train_metrics,
-            val_metrics=val_metrics,
-            args=args,
         )
         if is_best:
             save_checkpoint(
                 path=checkpoint_dir / "best.pt",
                 model=model,
-                optimizer=optimizer,
-                scheduler=scheduler,
-                epoch=epoch,
-                best_val_acc=best_val_acc,
-                train_metrics=train_metrics,
-                val_metrics=val_metrics,
-                args=args,
             )
 
         print(
