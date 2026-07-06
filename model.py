@@ -68,7 +68,7 @@ if __name__ == "__main__":
         model,
         input_data=(input_ids, attention_mask),
         col_names=("input_size", "output_size", "num_params", "trainable"),
-        depth=4,
+        depth=8,
     )
 
     with torch.inference_mode():
@@ -76,7 +76,10 @@ if __name__ == "__main__":
         loss = nn.CrossEntropyLoss()(logits, labels)
 
     print("device:", device)
-    print("input_ids shape:", tuple(input_ids.shape))
-    print("attention_mask shape:", tuple(attention_mask.shape))
-    print("logits shape:", tuple(logits.shape))
+    print("input_ids shape:", input_ids.shape)
+    print("input_ids:", input_ids)
+    print("attention_mask shape:", attention_mask.shape)
+    print("attention_mask :", attention_mask)
+    print("logits shape:", logits.shape)
+    print("logits :", logits)
     print("loss:", float(loss))

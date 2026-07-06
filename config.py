@@ -25,6 +25,10 @@ class Config:
         self.llm_api_key = os.getenv("DASHSCOPE_API_KEY")
         self.llm_model_name = "deepseek-v4-flash"
         self.llm_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+        # fastapi
+        self.fastapi_host = "127.0.0.1"
+        self.fastapi_port = 8000
+        self.reload = True
 
 
 Root_DIR = os.path.dirname(os.path.abspath(__file__))
