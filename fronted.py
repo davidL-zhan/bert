@@ -26,3 +26,4 @@ if st.button("提交"):
         st.write(f"预测结果：{pred_class}")
     except Exception as e:
         st.write("网络波动，错误码是：666，请联系人工客服：020-119")
+# streamlit run fronted.py --server.address 127.0.0.1 --server.port 8501

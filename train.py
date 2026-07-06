@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 from transformers import get_linear_schedule_with_warmup
 from tqdm import tqdm
-
+import time
 from config import Root_DIR, config
 from dataset import bulid_dataloader
 from model import BertClassifierModel
@@ -118,10 +118,11 @@ def train_one_epoch(
 @torch.inference_mode()
 def evaluate(model, loader, criterion, device, max_batches=None):
     model.eval()
+    model.to(device)
     total_loss = 0.0
     total_correct = 0
     total_examples = 0
-
+    start_time = time.perf_counter()
     progress = tqdm(loader, desc="valid", leave=False)
     for step, batch in enumerate(progress, start=1):
         batch = move_batch_to_device(batch, device)
@@ -143,10 +144,11 @@ def evaluate(model, loader, criterion, device, max_batches=None):
 
         if max_batches is not None and step >= max_batches:
             break
-
+        elapsed_time = time.perf_counter() - start_time
     return {
         "loss": total_loss / max(total_examples, 1),
         "acc": total_correct / max(total_examples, 1),
+        "time": elapsed_time,
     }
 
 
