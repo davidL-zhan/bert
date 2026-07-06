@@ -5,7 +5,12 @@ from starlette.responses import JSONResponse
 from llm_predict import predict_llm
 from config import config
 
-app = fastapi.FastAPI()
+app = fastapi.FastAPI(
+    title="BERT API",
+    description="文本分类接口服务",
+    version="1.0.0",
+    docs_url="/docs",
+)
 label2answer = {0: "这是一个负面评价", 1: "这是一个正面评价"}
 
 
@@ -19,6 +24,9 @@ def predict_text(text: dict):
 
 
 if __name__ == "__main__":
+
+    # 启动服务
+    # = uvicorn app:app --host 127.0.0.1 --port 8000 --reload
     uvicorn.run(
         "app:app",
         host=config.fastapi_host,
