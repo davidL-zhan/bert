@@ -8,7 +8,7 @@ from transformers import get_linear_schedule_with_warmup
 from tqdm import tqdm
 import time
 from config import Root_DIR, config
-from dataset import bulid_dataloader
+from dataset import build_dataloader
 from model import BertClassifierModel
 
 
@@ -31,14 +31,14 @@ def resolve_project_path(path):
 
 
 def build_loaders():
-    train_loader = bulid_dataloader(
+    train_loader = build_dataloader(
         split="train",
         batch_size=config.batch_size,
         shuffle=True,
         num_workers=config.num_workers,
         drop_last=False,
     )
-    val_loader = bulid_dataloader(
+    val_loader = build_dataloader(
         split="validation",
         batch_size=config.batch_size,
         shuffle=False,
@@ -53,6 +53,7 @@ def move_batch_to_device(batch, device):
         "input_ids": batch["input_ids"].to(device),
         "attention_mask": batch["attention_mask"].to(device),
         "labels": batch["labels"].to(device),
+        "token_type_ids": batch["token_type_ids"].to(device),
     }
 
 

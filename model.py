@@ -8,20 +8,28 @@ import torch
 
 class BertClassifierModel(nn.Module):
 
-    def __init__(self, num_labels=config.classname_len):
+    # 基于预训练 BERT/MacBERT 的文本分类模型。
+    def __init__(self, num_labels: int = config.classname_len) -> None:
         # 1- 初始化父类
         super().__init__()
 
         # 2- 搭建网络结构
         # 2.1- 先定义Bert模型
-        self.bert_model = BertModel.from_pretrained(config.model_name)
+        self.bert_model: BertModel = BertModel.from_pretrained(config.model_name)
 
         # 2.2- 再定义我们自己的网络结构
-        in_features = BertConfig.from_pretrained(config.model_name).hidden_size
-        self.dropout = nn.Dropout(config.dropout)
-        self.linear = nn.Linear(in_features=in_features, out_features=num_labels)
+        in_features: int = BertConfig.from_pretrained(config.model_name).hidden_size
+        self.dropout: nn.Dropout = nn.Dropout(config.dropout)
+        self.linear: nn.Linear = nn.Linear(
+            in_features=in_features, out_features=num_labels
+        )
 
-    def forward(self, input_ids, attention_mask, token_type_ids=None):
+    def forward(
+        self,
+        input_ids: torch.Tensor,
+        attention_mask: torch.Tensor,
+        token_type_ids: torch.Tensor | None = None,
+    ) -> torch.Tensor:
         # torch.no_grad()冻结bert的反向传播。如果放开，训练耗时大量增加
         # self.bert_model.eval()
         # with torch.no_grad():
@@ -40,7 +48,7 @@ class BertClassifierModel(nn.Module):
         """
         # 下面两行代码的效果类似
         # return self.linear(bert_output.pooler_output)
-        cls_hidden_state = bert_output.last_hidden_state[:, 0]
+        cls_hidden_state: torch.Tensor = bert_output.last_hidden_state[:, 0]
         return self.linear(self.dropout(cls_hidden_state))
 
 
@@ -49,12 +57,12 @@ if __name__ == "__main__":
 
     torch.manual_seed(42)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    tokenizer = BertTokenizer.from_pretrained(config.model_name)
-    model = BertClassifierModel(config.classname_len).to(device)
+    device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    tokenizer: BertTokenizer = BertTokenizer.from_pretrained(config.model_name)
+    model: BertClassifierModel = BertClassifierModel(config.classname_len).to(device)
     model.eval()
 
-    sentences = ["这部电影很好看", "这个餐厅的服务太差了"]
+    sentences: list[str] = ["这部电影很好看", "这个餐厅的服务太差了"]
     encoded = tokenizer(
         sentences,
         padding=True,
@@ -62,9 +70,9 @@ if __name__ == "__main__":
         max_length=config.max_length,
         return_tensors="pt",
     )
-    input_ids = encoded["input_ids"].to(device)
-    attention_mask = encoded["attention_mask"].to(device)
-    labels = torch.tensor([0, 1], dtype=torch.long, device=device)
+    input_ids: torch.Tensor = encoded["input_ids"].to(device)
+    attention_mask: torch.Tensor = encoded["attention_mask"].to(device)
+    labels: torch.Tensor = torch.tensor([0, 1], dtype=torch.long, device=device)
 
     summary(
         model,
@@ -74,8 +82,8 @@ if __name__ == "__main__":
     )
 
     with torch.inference_mode():
-        logits = model(input_ids=input_ids, attention_mask=attention_mask)
-        loss = nn.CrossEntropyLoss()(logits, labels)
+        logits: torch.Tensor = model(input_ids=input_ids, attention_mask=attention_mask)
+        loss: torch.Tensor = nn.CrossEntropyLoss()(logits, labels)
 
     print("device:", device)
     print("input_ids shape:", input_ids.shape)

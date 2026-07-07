@@ -1,4 +1,4 @@
-from dataset import bulid_dataloader
+from dataset import build_dataloader
 from config import config
 from model import BertClassifierModel
 import torch
@@ -6,7 +6,7 @@ import torch.nn as nn
 from train import evaluate
 import warnings
 
-warnings.filterwarnings("ignore", category=DeprecationWarning)
+# warnings.filterwarnings("ignore", category=DeprecationWarning)
 """
         量化引擎：
             none：没有硬件加速
@@ -18,7 +18,7 @@ print("支持的量化引擎：", torch.backends.quantized.supported_engines)
 
 
 if __name__ == "__main__":
-    test_loader = bulid_dataloader("test", 64, False, 0)
+    test_loader = build_dataloader("test", 64, False, 0)
     # print(len(test_loader))
     # print(next(iter(test_loader)))
     model = BertClassifierModel()

@@ -5,21 +5,24 @@ from starlette.responses import JSONResponse
 from llm_predict import predict_llm
 from config import config
 
+# FastAPI 应用对象，供 uvicorn 或命令行启动时加载。
 app = fastapi.FastAPI(
     title="BERT API",
     description="文本分类接口服务",
     version="1.0.0",
     docs_url="/docs",
 )
-label2answer = {0: "这是一个负面评价", 1: "这是一个正面评价"}
+
+# 模型输出类别到接口展示文本的映射。
+label2answer: dict[int, str] = {0: "这是一个负面评价", 1: "这是一个正面评价"}
 
 
 @app.post("/predict")
-def predict_text(text: dict):
+def predict_text(text: dict[str, str]) -> JSONResponse:
     """接收文本，返回预测结果"""
-    result = predict(text)
-    # result = int(predict_llm(text))
-    answer = label2answer[result]
+    # result: int = predict(text)
+    result = int(predict_llm(text))
+    answer: str = label2answer[result]
     return JSONResponse(content={"label": answer})
 
 

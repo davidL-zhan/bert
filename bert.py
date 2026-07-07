@@ -358,6 +358,7 @@ class BertPooler(nn.Module):
         # 输出形状：[batch_size, hidden_size]。
         # hidden_states[:, 0] 对应每个样本的第一个 token，通常是 [CLS]。
         cls_token = hidden_states[:, 0]
+        # 输出形状：[batch_size, hidden_size]。
         return self.activation(self.dense(cls_token))
 
 
@@ -436,7 +437,7 @@ class BertModel(nn.Module):
             extended_attention_mask,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
-        )
+        )  # 【batch, seq_len, hidden_size】
         # 第四步：取 [CLS] 位置得到句级 pooled output。
         pooled_output = self.pooler(sequence_output)
 
@@ -488,7 +489,7 @@ class BertForSequenceClassification(nn.Module):
             token_type_ids=token_type_ids,
         )
         # 分类任务通常对 pooled_output 再做一次 dropout。
-        pooled_output = self.dropout(outputs["pooler_output"])
+        pooled_output = self.dropout(outputs["pooler_output"])  # 【batch, hidden_size】
         # logits 形状是 [batch_size, num_labels]，还没有经过 softmax。
         logits = self.classifier(pooled_output)
 
