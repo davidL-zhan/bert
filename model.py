@@ -21,12 +21,14 @@ class BertClassifierModel(nn.Module):
         self.dropout = nn.Dropout(config.dropout)
         self.linear = nn.Linear(in_features=in_features, out_features=num_labels)
 
-    def forward(self, input_ids, attention_mask):
+    def forward(self, input_ids, attention_mask, token_type_ids=None):
         # torch.no_grad()冻结bert的反向传播。如果放开，训练耗时大量增加
         # self.bert_model.eval()
         # with torch.no_grad():
         bert_output = self.bert_model(
-            input_ids=input_ids, attention_mask=attention_mask
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            token_type_ids=token_type_ids,
         )
 
         # 调用我们自己的网络层

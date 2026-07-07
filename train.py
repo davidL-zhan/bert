@@ -69,7 +69,14 @@ def get_total_training_steps(loader, max_batches=None):
 
 
 def train_one_epoch(
-    model, loader, criterion, optimizer, scheduler, device, epoch, max_batches=None
+    model: BertClassifierModel,
+    loader,
+    criterion,
+    optimizer,
+    scheduler,
+    device,
+    epoch,
+    max_batches=None,
 ):
     model.train()
     total_loss = 0.0
@@ -85,6 +92,7 @@ def train_one_epoch(
         logits = model(
             input_ids=batch["input_ids"],
             attention_mask=batch["attention_mask"],
+            token_type_ids=batch["token_type_ids"],
         )
         loss = criterion(logits, batch["labels"])
         loss.backward()
